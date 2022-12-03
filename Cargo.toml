@@ -7,10 +7,14 @@ repository = "https://github.com/stillonearth/bevy_quadruped_neural_control"
 
 [dependencies]
 bevy = "0.9.1"
-bevy_mujoco = { path = "../bevy_mujoco" }
+bevy_rl = "0.9.4"
+bevy_mujoco = { git = "https://github.com/stillonearth/bevy_mujoco", rev = "01f2708" }
 bevy-inspector-egui = { version = "0.14.0" }
 bevy_flycam = { git = "https://github.com/sburris0/bevy_flycam" }
 rand = "0.8.5"
+serde = "1.0.89"
+serde_derive = "1.0.143"
+serde_json = "1.0.83"
 
 [profile.dev]
 opt-level = 3
