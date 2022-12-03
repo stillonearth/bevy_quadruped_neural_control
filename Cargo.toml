@@ -1,0 +1,16 @@
+[package]
+name = "bevy_quadruped_neural_control"
+version = "0.0.1"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/stillonearth/bevy_quadruped_neural_control"
+
+[dependencies]
+bevy = "0.9.1"
+bevy_mujoco = { path = "../bevy_mujoco" }
+bevy-inspector-egui = { version = "0.14.0" }
+bevy_flycam = { git = "https://github.com/sburris0/bevy_flycam" }
+rand = "0.8.5"
+
+[profile.dev]
+opt-level = 3
