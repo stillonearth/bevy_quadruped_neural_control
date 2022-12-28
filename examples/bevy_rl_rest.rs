@@ -40,7 +40,6 @@ fn setup(mut commands: Commands) {
         .insert(FlyCam);
 }
 
-#[allow(unused_must_use)]
 fn pause_simulation(
     mut app_state: ResMut<State<AppState>>,
     ai_gym_state: Res<AIGymState<Actions, EnvironmentState>>,
@@ -114,7 +113,6 @@ fn main() {
     // Setup bevy_mujoco
     app.insert_resource(MuJoCoPluginSettings {
         model_xml_path: "assets/unitree_a1/scene.xml".to_string(),
-        model_assets_path: "assets/unitree_a1/assets/".to_string(),
         pause_simulation: false,
         target_fps: 600.0,
     })
