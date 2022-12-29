@@ -17,7 +17,7 @@ fn main() {
     let input: Tensor = input_array.into();
     let result = model.run(tvec!(input.into())).unwrap();
     println!(
-        " Result of neural net invocation: {:?}",
+        "Result of neural net invocation: {:?}",
         result[0].to_array_view::<f32>().unwrap()
     );
 }

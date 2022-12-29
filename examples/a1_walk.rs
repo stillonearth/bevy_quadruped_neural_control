@@ -5,8 +5,6 @@ use bevy_mujoco::*;
 use tract_ndarray::Array2;
 use tract_onnx::prelude::*;
 
-use rand::Rng;
-
 fn setup(mut commands: Commands) {
     commands.spawn(PointLightBundle {
         point_light: PointLight {
@@ -30,9 +28,9 @@ fn setup(mut commands: Commands) {
 fn robot_control_loop(mut mujoco_resources: ResMut<MuJoCoResources>) {
     // load onnx model
     let model = tract_onnx::onnx()
-        .model_for_path("assets/g1-control-direction.onnx")
+        .model_for_path("assets/g1-forward.onnx")
         .unwrap()
-        .with_input_fact(0, f32::fact([1, 121]).into())
+        .with_input_fact(0, f32::fact([1, 119]).into())
         .unwrap()
         .into_optimized()
         .unwrap()
@@ -60,16 +58,13 @@ fn robot_control_loop(mut mujoco_resources: ResMut<MuJoCoResources>) {
         input_vec.push(cfrc_ext[i][4] as f32);
         input_vec.push(cfrc_ext[i][5] as f32);
     }
-    // control commands
-    input_vec.push(3.14); // direction
-    input_vec.push(2.65); // orientation
 
     // for some reasons this might be 2 elements in the beggining of simulation
-    if input_vec.len() != 121 {
+    if input_vec.len() != 119 {
         return;
     }
 
-    let input: Tensor = Array2::from_shape_vec((1, 121), input_vec).unwrap().into();
+    let input: Tensor = Array2::from_shape_vec((1, 119), input_vec).unwrap().into();
     let result = model.run(tvec!(input.into())).unwrap();
     let actions = result[0].to_array_view::<f32>().unwrap();
 
@@ -86,7 +81,7 @@ fn main() {
         .insert_resource(MuJoCoPluginSettings {
             model_xml_path: "assets/unitree_a1/scene.xml".to_string(),
             pause_simulation: false,
-            target_fps: 1200.0,
+            target_fps: 300.0,
         })
         .add_plugin(NoCameraPlayerPlugin)
         .insert_resource(MovementSettings {
