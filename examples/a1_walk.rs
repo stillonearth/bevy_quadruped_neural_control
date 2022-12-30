@@ -85,7 +85,7 @@ fn main() {
         .insert_resource(MuJoCoPluginSettings {
             model_xml_path: "assets/unitree_a1/scene.xml".to_string(),
             pause_simulation: false,
-            target_fps: 600.0,
+            target_fps: 100.0,
         })
         .add_plugin(NoCameraPlayerPlugin)
         .insert_resource(MovementSettings {
