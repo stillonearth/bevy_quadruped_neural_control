@@ -67,11 +67,6 @@ fn robot_control_loop(mut mujoco_resources: ResMut<MuJoCoResources>) {
         input_vec.push(cfrc_ext[i][5] as f32);
     }
 
-    // for some reasons this might be 2 elements in the beggining of simulation
-    if input_vec.len() != 119 {
-        return;
-    }
-
     let input: Tensor = Array2::from_shape_vec((1, 119), input_vec).unwrap().into();
     let result = MODEL.run(tvec!(input.into())).unwrap();
     let actions = result[0].to_array_view::<f32>().unwrap();
@@ -85,8 +80,6 @@ fn robot_control_loop(mut mujoco_resources: ResMut<MuJoCoResources>) {
 }
 
 fn main() {
-    // load onnx model
-
     App::new()
         .add_plugins(DefaultPlugins)
         .insert_resource(MuJoCoPluginSettings {
@@ -101,6 +94,6 @@ fn main() {
         })
         .add_plugin(MuJoCoPlugin)
         .add_startup_system(setup)
-        .add_system(robot_control_loop)
+        .add_system(robot_control_loop.after("mujoco_simulate"))
         .run();
 }
