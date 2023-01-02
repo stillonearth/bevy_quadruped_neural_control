@@ -25,4 +25,5 @@ model = SAC.load('./../assets/g1-forward')
 while True:
     obs = get_obs()
     action = model.predict(obs)[0].tolist()
+    
     send_action(action)
