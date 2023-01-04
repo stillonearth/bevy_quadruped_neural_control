@@ -1,3 +1,6 @@
+// This example shows how to use the REST API to control the simulation
+// It uses the bevy_rl crate to provide a REST API
+
 use bevy::prelude::*;
 use bevy_flycam::*;
 use bevy_mujoco::*;
@@ -121,9 +124,7 @@ fn main() {
     // Setup bevy_rl
     app.add_state(AppState::InGame);
     app.insert_resource(gym_settings.clone())
-        .insert_resource(AIGymState::<Actions, EnvironmentState>::new(
-            gym_settings,
-        ))
+        .insert_resource(AIGymState::<Actions, EnvironmentState>::new(gym_settings))
         .add_plugin(AIGymPlugin::<Actions, EnvironmentState>::default());
 
     app.add_system(pause_simulation.after("mujoco_simulate"));

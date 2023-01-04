@@ -48,6 +48,7 @@ fn setup(mut commands: Commands) {
 
 // These numbers aren't exported to onnx, it's action scaling coefficients from original python code
 // https://github.com/DLR-RM/stable-baselines3/blob/4fa17dcf0f72455aa3d36308291d4b052b2544f7/stable_baselines3/common/policies.py#L263
+// can be obtained from `python/compare_onnx_pytorch.ipynb`
 const LOW: [f32; 12] = [
     -0.802851, -1.0472, -2.69653, -0.802851, -1.0472, -2.69653, -0.802851, -1.0472, -2.69653,
     -0.802851, -1.0472, -2.69653,
@@ -70,9 +71,7 @@ fn robot_control_loop(
 
     // adjust camera position
     for mut transform in cameras.iter_mut() {
-        // transform.translation.x = qpos[0] as f32;
-        // transform.translation.y = qpos[1] as f32;
-
+        // extract bevy translation for the body id 1
         let root_body_transform = bodies_query
             .iter()
             .find(|(_, _, body, _)| body.id == 1)
