@@ -122,7 +122,7 @@ fn main() {
     app.add_state(AppState::InGame);
     app.insert_resource(gym_settings.clone())
         .insert_resource(AIGymState::<Actions, EnvironmentState>::new(
-            gym_settings.clone(),
+            gym_settings,
         ))
         .add_plugin(AIGymPlugin::<Actions, EnvironmentState>::default());
 

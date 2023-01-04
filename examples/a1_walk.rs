@@ -44,6 +44,18 @@ fn setup(mut commands: Commands) {
         .insert(FlyCam);
 }
 
+// These numbers aren't exported to onnx, it's action scaling coefficients from original python code
+// https://github.com/DLR-RM/stable-baselines3/blob/4fa17dcf0f72455aa3d36308291d4b052b2544f7/stable_baselines3/common/policies.py#L263
+const LOW: [f32; 12] = [
+    -0.802851, -1.0472, -2.69653, -0.802851, -1.0472, -2.69653, -0.802851, -1.0472, -2.69653,
+    -0.802851, -1.0472, -2.69653,
+];
+
+const HIGH: [f32; 12] = [
+    0.802851, 4.18879, -0.916298, 0.802851, 4.18879, -0.916298, 0.802851, 4.18879, -0.916298,
+    0.802851, 4.18879, -0.916298,
+];
+
 fn robot_control_loop(mut mujoco_resources: ResMut<MuJoCoResources>) {
     // prepare simulation data for the NN
     let qpos = mujoco_resources.state.qpos.clone();
@@ -67,13 +79,19 @@ fn robot_control_loop(mut mujoco_resources: ResMut<MuJoCoResources>) {
         input_vec.push(cfrc_ext[i][5] as f32);
     }
 
+    // convert this to a tensor
     let input: Tensor = Array2::from_shape_vec((1, 119), input_vec).unwrap().into();
+    // get model execution result
     let result = MODEL.run(tvec!(input.into())).unwrap();
+    // extract model output
     let actions = result[0].to_array_view::<f32>().unwrap();
-
+    // prepare control vector fo passing to mujoco
     let mut control: Vec<f64> = vec![0.0; mujoco_resources.control.number_of_controls];
+    // fill control vector with actions (copy and adjust model output)
     for i in 0..mujoco_resources.control.number_of_controls {
         control[i] = actions[[0, i]] as f64;
+        // scaling actions
+        control[i] = LOW[i] as f64 + 0.5 * (control[i] + 1.0) * (HIGH[i] as f64 - LOW[i] as f64);
     }
 
     mujoco_resources.control.data = control;
@@ -85,7 +103,8 @@ fn main() {
         .insert_resource(MuJoCoPluginSettings {
             model_xml_path: "assets/unitree_a1/scene.xml".to_string(),
             pause_simulation: false,
-            target_fps: 100.0,
+            target_fps: 600.0, // this is not actual fps (bug in bevy_mujoco),
+                               // the bigger the value, the slower the simulation
         })
         .add_plugin(NoCameraPlayerPlugin)
         .insert_resource(MovementSettings {
