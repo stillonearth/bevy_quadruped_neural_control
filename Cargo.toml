@@ -15,7 +15,7 @@ rand = "0.8.5"
 serde = "1.0.89"
 serde_derive = "1.0.143"
 serde_json = "1.0.83"
-tract-onnx = { git = "https://github.com/sonos/tract.git", rev = "b54a0a613a8cd3fae9e8fe0fd13228b5e61ebe64" }
+tract-onnx = { git = "https://github.com/sonos/tract.git", rev = "bff44d31a840c47b7971a66491a5bd72a786636e" }
 lazy_static = "1.4.0"
 
 [profile.dev]
