@@ -1,11 +1,8 @@
 # Bevy Quadruped Neural Control
 
-[![Crates.io](https://img.shields.io/crates/v/bevy_quadruped_neural_control
-.svg)](https://crates.io/crates/bevy_quadruped_neural_control)
+[![Crates.io](https://img.shields.io/crates/v/bevy_quadruped_neural_control.svg)](https://crates.io/crates/bevy_quadruped_neural_control)
 [![MIT/Apache 2.0](https://img.shields.io/badge/license-MIT%2FApache-blue.svg)](https://github.com/bevyengine/bevy#license)
-[![Rust](https://github.com/stillonearth/bevy_quadruped_neural_control
-/workflows/CI/badge.svg)](https://github.com/stillonearth/bevy_quadruped_neural_control
-/actions)
+[![Rust](https://github.com/stillonearth/bevy_quadruped_neural_control/workflows/CI/badge.svg)](https://github.com/stillonearth/bevy_quadruped_neural_control/actions)
 
 ##
 
