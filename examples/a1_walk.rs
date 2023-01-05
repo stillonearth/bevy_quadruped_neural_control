@@ -1,7 +1,8 @@
+#![allow(clippy::type_complexity)]
+#![allow(clippy::approx_constant)]
+#![feature(allocator_api)]
 // This example runs a simple policy on the A1 robot. The policy is a feedforward neural network
 // Is uses tract_onnx to load the model and run it
-
-#![feature(allocator_api)]
 
 use std::alloc::Global;
 
@@ -68,19 +69,19 @@ fn robot_control_loop(mut mujoco_resources: ResMut<MuJoCoResources>) {
 
     // make an input vector for a neural network
     let mut input_vec: Vec<f32> = Vec::new();
-    for i in 2..qpos.len() {
-        input_vec.push(qpos[i] as f32);
+    for value in qpos.iter().skip(2) {
+        input_vec.push(*value as f32);
     }
-    for i in 0..qvel.len() {
-        input_vec.push(qvel[i] as f32);
+    for value in qvel.iter() {
+        input_vec.push(*value as f32);
     }
-    for i in 0..cfrc_ext.len() {
-        input_vec.push(cfrc_ext[i][0] as f32);
-        input_vec.push(cfrc_ext[i][1] as f32);
-        input_vec.push(cfrc_ext[i][2] as f32);
-        input_vec.push(cfrc_ext[i][3] as f32);
-        input_vec.push(cfrc_ext[i][4] as f32);
-        input_vec.push(cfrc_ext[i][5] as f32);
+    for value in cfrc_ext.iter() {
+        input_vec.push(value[0] as f32);
+        input_vec.push(value[1] as f32);
+        input_vec.push(value[2] as f32);
+        input_vec.push(value[3] as f32);
+        input_vec.push(value[4] as f32);
+        input_vec.push(value[5] as f32);
     }
 
     // convert this to a tensor

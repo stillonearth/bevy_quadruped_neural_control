@@ -20,3 +20,9 @@ lazy_static = "1.4.0"
 
 [profile.dev]
 opt-level = 3
+
+[[example]]
+name = "a1_walk"
+
+[[example]]
+name = "bevy_rl_rest"

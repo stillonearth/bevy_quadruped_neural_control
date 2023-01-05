@@ -1,13 +1,14 @@
-// This example shows how to use the REST API to control the simulation
-// It uses the bevy_rl crate to provide a REST API
+#![allow(clippy::needless_range_loop)]
+#![allow(clippy::approx_constant)]
+#![allow(clippy::type_complexity)]
 
+///! This example shows how to use the REST API to control the simulation
+///! It uses the bevy_rl crate to provide a REST API
 use bevy::prelude::*;
 use bevy_flycam::*;
 use bevy_mujoco::*;
 
-use bevy_rl::{
-    state::AIGymState, AIGymPlugin, AIGymSettings, EventControl, EventPauseResume, SimulationState,
-};
+use bevy_rl::{AIGymPlugin, AIGymSettings, AIGymState, EventControl, EventPause, SimulationState};
 use serde::{Deserialize, Serialize};
 
 #[derive(Default, Deref, DerefMut, Clone, Deserialize)]
@@ -39,7 +40,7 @@ fn setup(mut commands: Commands) {
 }
 
 fn bevy_rl_pause_request(
-    mut pause_event_reader: EventReader<EventPauseResume>,
+    mut pause_event_reader: EventReader<EventPause>,
     mut mujoco_settings: ResMut<MuJoCoPluginSettings>,
     mujoco_resources: Res<MuJoCoResources>,
     ai_gym_state: Res<AIGymState<Actions, EnvironmentState>>,
