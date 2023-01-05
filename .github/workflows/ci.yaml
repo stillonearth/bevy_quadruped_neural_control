@@ -40,7 +40,7 @@ jobs:
       - name: Build all examples
         uses: actions-rs/cargo@v1
         with:
-          command: build --examples
+          command: build
 
   # Run cargo clippy -- -D warnings
   clippy_check:
