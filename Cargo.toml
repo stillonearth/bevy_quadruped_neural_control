@@ -7,7 +7,7 @@ repository = "https://github.com/stillonearth/bevy_quadruped_neural_control"
 
 [dependencies]
 bevy = "0.9.1"
-bevy_rl = { version = "0.9.6" }
+bevy_rl = { version = "0.9.8-beta" }                                                                          # { version = "0.9.6" }
 bevy_mujoco = { git = "https://github.com/stillonearth/bevy_mujoco.git", rev = "91e6b7d" }
 bevy-inspector-egui = { version = "0.15.0" }
 bevy_flycam = { version = "0.9.0" }

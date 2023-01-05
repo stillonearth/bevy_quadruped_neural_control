@@ -107,8 +107,8 @@ fn main() {
         .insert_resource(MuJoCoPluginSettings {
             model_xml_path: "assets/unitree_a1/scene.xml".to_string(),
             pause_simulation: false,
-            target_fps: 600.0, // this is not actual fps (bug in bevy_mujoco),
-                               // the bigger the value, the slower the simulation
+            target_fps: 60.0, // this is not actual fps (bug in bevy_mujoco),
+                              // the bigger the value, the slower the simulation
         })
         .add_plugin(NoCameraPlayerPlugin)
         .insert_resource(MovementSettings {

@@ -5,14 +5,10 @@ use bevy::prelude::*;
 use bevy_flycam::*;
 use bevy_mujoco::*;
 
-use bevy_rl::{render::AIGymPlugin, state::AIGymState, AIGymSettings};
+use bevy_rl::{
+    state::AIGymState, AIGymPlugin, AIGymSettings, EventControl, EventPauseResume, SimulationState,
+};
 use serde::{Deserialize, Serialize};
-
-#[derive(Debug, Clone, Eq, PartialEq, Hash, Resource)]
-enum AppState {
-    InGame,
-    Control,
-}
 
 #[derive(Default, Deref, DerefMut, Clone, Deserialize)]
 pub struct Actions(Vec<f64>);
@@ -27,7 +23,7 @@ fn setup(mut commands: Commands) {
         point_light: PointLight {
             intensity: 9000.0,
             range: 100.,
-            shadows_enabled: true,
+            shadows_enabled: false,
             ..default()
         },
         transform: Transform::from_xyz(8.0, 16.0, 8.0),
@@ -42,66 +38,46 @@ fn setup(mut commands: Commands) {
         .insert(FlyCam);
 }
 
-#[allow(unused_must_use)]
-fn pause_simulation(
-    mut app_state: ResMut<State<AppState>>,
-    ai_gym_state: Res<AIGymState<Actions, EnvironmentState>>,
+fn bevy_rl_pause_request(
+    mut pause_event_reader: EventReader<EventPauseResume>,
     mut mujoco_settings: ResMut<MuJoCoPluginSettings>,
-    ai_gym_settings: Res<AIGymSettings>,
     mujoco_resources: Res<MuJoCoResources>,
+    ai_gym_state: Res<AIGymState<Actions, EnvironmentState>>,
 ) {
-    if *app_state.current() == AppState::Control {
-        return;
+    for _ in pause_event_reader.iter() {
+        // Pause physics engine
+        mujoco_settings.pause_simulation = true;
+        // Collect state into serializable struct
+        let env_state = EnvironmentState(mujoco_resources.state.clone());
+        // Set bevy_rl gym state
+        let mut ai_gym_state = ai_gym_state.lock().unwrap();
+        ai_gym_state.set_env_state(env_state);
     }
-
-    app_state.push(AppState::Control);
-    mujoco_settings.pause_simulation = true;
-
-    let mut ai_gym_state = ai_gym_state.lock().unwrap();
-    let results = (0..ai_gym_settings.num_agents).map(|_| true).collect();
-    ai_gym_state.send_step_result(results);
-
-    let env_state = EnvironmentState(mujoco_resources.state.clone());
-    ai_gym_state.set_env_state(env_state);
 }
 
-pub(crate) fn process_control_request(
-    ai_gym_state: ResMut<AIGymState<Actions, EnvironmentState>>,
-    mut app_state: ResMut<State<AppState>>,
+#[allow(unused_must_use)]
+fn bevy_rl_control_request(
+    mut pause_event_reader: EventReader<EventControl>,
     mut mujoco_settings: ResMut<MuJoCoPluginSettings>,
     mut mujoco_resources: ResMut<MuJoCoResources>,
+    mut simulation_state: ResMut<State<SimulationState>>,
 ) {
-    let ai_gym_state = ai_gym_state.lock().unwrap();
-
-    // Drop the system if users hasn't sent request this frame
-    if !ai_gym_state.is_next_action() {
-        return;
-    }
-
-    let unparsed_actions = ai_gym_state.receive_action_strings();
-
-    for i in 0..unparsed_actions.len() {
-        if let Some(unparsed_action) = unparsed_actions[i].clone() {
-            let action: Vec<f64> = serde_json::from_str(&unparsed_action).unwrap();
-            mujoco_resources.control.data = action;
+    for control in pause_event_reader.iter() {
+        println!("Control request received");
+        let unparsed_actions = &control.0;
+        for i in 0..unparsed_actions.len() {
+            if let Some(unparsed_action) = unparsed_actions[i].clone() {
+                let action: Vec<f64> = serde_json::from_str(&unparsed_action).unwrap();
+                mujoco_resources.control.data = action;
+            }
         }
+        // Resume simulation
+        mujoco_settings.pause_simulation = false;
+        simulation_state.set(SimulationState::Running);
     }
-
-    mujoco_settings.pause_simulation = false;
-
-    app_state.pop().unwrap();
 }
 
-#[derive(Resource)]
-struct DelayedControlTimer(Timer);
-
 fn main() {
-    let gym_settings = AIGymSettings {
-        num_agents: 1,
-        render_to_buffer: false,
-        ..default()
-    };
-
     let mut app = App::new();
 
     // Basic bevy setup
@@ -122,15 +98,18 @@ fn main() {
     .add_plugin(MuJoCoPlugin);
 
     // Setup bevy_rl
-    app.add_state(AppState::InGame);
-    app.insert_resource(gym_settings.clone())
-        .insert_resource(AIGymState::<Actions, EnvironmentState>::new(gym_settings))
+    let ai_gym_state = AIGymState::<Actions, EnvironmentState>::new(AIGymSettings {
+        num_agents: 1,
+        render_to_buffer: false,
+        pause_interval: 0.01,
+        ..default()
+    });
+    app.insert_resource(ai_gym_state)
         .add_plugin(AIGymPlugin::<Actions, EnvironmentState>::default());
 
-    app.add_system(pause_simulation.after("mujoco_simulate"));
-    app.add_system_set(
-        SystemSet::on_update(AppState::Control).with_system(process_control_request),
-    );
+    // bevy_rl events
+    app.add_system(bevy_rl_pause_request);
+    app.add_system(bevy_rl_control_request);
 
     // Start
     app.run();
