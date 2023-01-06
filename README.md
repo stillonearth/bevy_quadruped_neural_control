@@ -19,3 +19,10 @@ Details on control system synthesis [here](https://github.com/stillonearth/conti
 ```bash
 cargo run --example a1_walk
 ```
+
+## Running Rust Simulator and Neural Networks in Python
+
+```bash
+cargo run --example bevy_rl_rest &
+cd python && python policy.py
+```
