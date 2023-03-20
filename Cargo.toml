@@ -1,21 +1,21 @@
 [package]
 name = "bevy_quadruped_neural_control"
-version = "0.0.1"
+version = "0.0.2"
 edition = "2021"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/stillonearth/bevy_quadruped_neural_control"
 
 [dependencies]
-bevy = "0.9.1"
-bevy_rl = { version = "0.9.8-beta" }                                                                          # { version = "0.9.6" }
-bevy_mujoco = { git = "https://github.com/stillonearth/bevy_mujoco.git", rev = "91e6b7d" }
-bevy-inspector-egui = { version = "0.15.0" }
-bevy_flycam = { version = "0.9.0" }
+bevy = "0.10.0"
+bevy_rl = { version = "0.10.0-beta" }                                                      # { version = "0.9.6" }
+bevy_mujoco = { git = "https://github.com/stillonearth/bevy_mujoco.git", rev = "51192fe" }
+bevy-inspector-egui = { version = "0.18.1" }
+bevy_flycam = { git = "https://github.com/NiklasEi/bevy_flycam.git", rev = "7d69689" }
 rand = "0.8.5"
-serde = "1.0.89"
-serde_derive = "1.0.143"
-serde_json = "1.0.83"
-tract-onnx = { git = "https://github.com/sonos/tract.git", rev = "bff44d31a840c47b7971a66491a5bd72a786636e" }
+serde = "1.0.158"
+serde_derive = "1.0.158"
+serde_json = "1.0.94"
+tract-onnx = { version = "0.19.7" }
 lazy_static = "1.4.0"
 
 [profile.dev]

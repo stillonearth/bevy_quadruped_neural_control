@@ -61,7 +61,7 @@ fn bevy_rl_control_request(
     mut pause_event_reader: EventReader<EventControl>,
     mut mujoco_settings: ResMut<MuJoCoPluginSettings>,
     mut mujoco_resources: ResMut<MuJoCoResources>,
-    mut simulation_state: ResMut<State<SimulationState>>,
+    mut simulation_state: ResMut<NextState<SimulationState>>,
 ) {
     for control in pause_event_reader.iter() {
         println!("Control request received");
