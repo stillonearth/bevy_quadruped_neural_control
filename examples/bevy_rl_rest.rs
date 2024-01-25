@@ -83,12 +83,12 @@ fn main() {
 
     // Basic bevy setup
     app.add_plugins(DefaultPlugins)
-        .add_plugin(NoCameraPlayerPlugin)
+        .add_plugins(NoCameraPlayerPlugin)
         .insert_resource(MovementSettings {
             speed: 3.0,
             ..default()
         })
-        .add_startup_system(setup);
+        .add_systems(Startup, setup);
 
     // Setup bevy_mujoco
     app.insert_resource(MuJoCoPluginSettings {
@@ -96,7 +96,7 @@ fn main() {
         pause_simulation: false,
         target_fps: 600.0,
     })
-    .add_plugin(MuJoCoPlugin);
+    .add_plugins(MuJoCoPlugin);
 
     // Setup bevy_rl
     let ai_gym_state = AIGymState::<Actions, EnvironmentState>::new(AIGymSettings {
@@ -106,11 +106,11 @@ fn main() {
         ..default()
     });
     app.insert_resource(ai_gym_state)
-        .add_plugin(AIGymPlugin::<Actions, EnvironmentState>::default());
+        .add_plugins(AIGymPlugin::<Actions, EnvironmentState>::default());
 
     // bevy_rl events
-    app.add_system(bevy_rl_pause_request);
-    app.add_system(bevy_rl_control_request);
+    app.add_systems(Update, bevy_rl_pause_request);
+    app.add_systems(Update, bevy_rl_control_request);
 
     // Start
     app.run();

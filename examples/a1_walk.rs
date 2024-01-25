@@ -111,13 +111,13 @@ fn main() {
             target_fps: 600.0, // this is not actual fps (bug in bevy_mujoco),
                                // the bigger the value, the slower the simulation
         })
-        .add_plugin(NoCameraPlayerPlugin)
+        .add_plugins(NoCameraPlayerPlugin)
         .insert_resource(MovementSettings {
             speed: 1.0,
             ..default()
         })
-        .add_plugin(MuJoCoPlugin)
-        .add_startup_system(setup)
-        .add_system(robot_control_loop)
+        .add_plugins(MuJoCoPlugin)
+        .add_systems(Startup, setup)
+        .add_systems(Update, robot_control_loop)
         .run();
 }
